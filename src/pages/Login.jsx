@@ -11,16 +11,35 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import validateToken from "../helpers/validateToken";
 
 export const Login = () => {
-  const schema = yup.object().shape({
-    email: yup.string().email().required(),
-    password: yup.string().required().min(8).max(16),
-  });
   const { setUser } = useUser();
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    async function checkTOKEN() {
+      try {
+        let result = await validateToken();
+        if (result.success) {
+          setUser(result.user);
+          navigate("/client");
+        }
+      } catch (error) {
+        console.log("hhhh");
+      }
+    }
+
+    checkTOKEN();
+  }, []);
+
+  const schema = yup.object().shape({
+    email: yup.string().email().required(),
+    password: yup.string().required().min(8).max(16),
+  });
+
   const {
     register,
     handleSubmit,
@@ -32,15 +51,9 @@ export const Login = () => {
       .post("http://localhost:3000/api/auth/login", data)
       .then((response) => {
         try {
-          //   setSuccess(response.data.message);
-          console.log("hhhhhhhhhh");
-          console.log(response.data.user);
           setUser(response.data.user);
           navigate("/client");
-
-          //   localStorage.setItem("user", JSON.stringify(response.data.user));
         } catch (error) {
-          console.log("pffffffffff");
           console.log(error);
         }
       })

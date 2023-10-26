@@ -10,6 +10,7 @@ import { Register } from "./pages/Register"; // Use { Register } instead of Regi
 import { Activate } from "./pages/activate.jsx";
 import HomeClient from "./pages/client/HomeClient";
 import { UserProvider } from "./contexts/UserContext";
+import AuthorizedRoute from "./services/AuthorizedRoute";
 
 function App() {
   return (
@@ -19,7 +20,13 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/activate" element={<Activate />} />
-          <Route path="/client" element={<HomeClient />} />
+          {/* <Route path="/client" element={<HomeClient />} /> */}
+          <Route
+            path="/client"
+            element={
+              <AuthorizedRoute requiredRole="client" element={<HomeClient />} />
+            }
+          />
         </Routes>
       </Router>
     </UserProvider>

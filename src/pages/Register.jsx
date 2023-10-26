@@ -8,8 +8,29 @@ import AlertTitle from "@mui/material/AlertTitle";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import validateToken from "../helpers/validateToken";
+import { useUser } from "../contexts/UserContext";
 
 export const Register = () => {
+  const [roles, setRoles] = useState([]);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+  const navigate = useNavigate();
+  const { setUser } = useUser();
+
+  useEffect(() => {
+    async function checkTOKEN() {
+      let result = await validateToken();
+      if (result.success) {
+        setUser(result.user);
+        navigate("/client");
+      }
+    }
+
+    checkTOKEN();
+  }, []);
+
   const schema = yup.object().shape({
     name: yup.string().required(),
     email: yup.string().email().required(),
@@ -22,9 +43,6 @@ export const Register = () => {
     formState: { errors },
   } = useForm({ resolver: yupResolver(schema) });
 
-  const [roles, setRoles] = useState([]);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
   const onSubmit = async (data) => {
     await axios
       .post("http://localhost:3000/api/auth/register", data)
