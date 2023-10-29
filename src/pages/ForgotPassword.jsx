@@ -1,23 +1,51 @@
-// export register component with h1 tag
-import { useForm } from "react-hook-form";
-import { useEffect, useState } from "react";
-import { useUser } from "../contexts/UserContext";
 import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
-import axios from "axios";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import validateToken from "../helpers/validateToken";
+import { useUser } from "../contexts/UserContext";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import axiosInstance from "../api/axiosInstance";
 
-export const Login = () => {
-    const { setUser } = useUser();
+const ForgotPassword = () => {
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
+
+    const { setUser } = useUser();
     const navigate = useNavigate();
+
+    const schema = yup.object().shape({
+        email: yup.string().email().required(),
+    });
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm({ resolver: yupResolver(schema) });
+
+    const onSubmit = async (data) => {
+        console.log(data);
+        await axiosInstance
+            .post("/api/auth/forgotpassword", data)
+            .then((response) => {
+                try {
+                    console.log(response.data);
+                    setSuccess(response.data.success);
+                } catch (error) {
+                    console.log(error);
+                }
+            })
+            .catch((error) => {
+                console.log(error.response.data.error);
+                setError(error.response.data.error);
+            });
+    };
 
     useEffect(() => {
         async function checkTOKEN() {
@@ -35,37 +63,9 @@ export const Login = () => {
         checkTOKEN();
     }, []);
 
-    const schema = yup.object().shape({
-        email: yup.string().email().required(),
-        password: yup.string().required().min(8).max(16),
-    });
-
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-    } = useForm({ resolver: yupResolver(schema) });
-
-    const onSubmit = async (data) => {
-        await axios
-            .post("http://localhost:3000/api/auth/login", data)
-            .then((response) => {
-                try {
-                    setUser(response.data.user);
-                    navigate("/client");
-                } catch (error) {
-                    console.log(error);
-                }
-            })
-            .catch((error) => {
-                console.log(error.response.data.error);
-                setError(error.response.data.error);
-            });
-    };
-
     return (
         <div>
-            <h1> this is the Login</h1>
+            <h1>Forgot Password</h1>
             <Box
                 component="form"
                 sx={{
@@ -106,19 +106,6 @@ export const Login = () => {
                             </p>
                         )}
                     </div>
-                    <div>
-                        <TextField
-                            type="password"
-                            error={!!errors.password}
-                            label="password"
-                            {...register("password")}
-                        />
-                        {errors.password && (
-                            <p style={{ margin: 0, color: "red" }}>
-                                {errors.password.message}
-                            </p>
-                        )}
-                    </div>
                 </div>
                 <Button variant="contained" type="submit">
                     Submit
@@ -127,3 +114,5 @@ export const Login = () => {
         </div>
     );
 };
+
+export default ForgotPassword;

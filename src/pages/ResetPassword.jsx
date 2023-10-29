@@ -1,43 +1,28 @@
-// export register component with h1 tag
-import { useForm } from "react-hook-form";
-import { useEffect, useState } from "react";
-import { useUser } from "../contexts/UserContext";
-import TextField from "@mui/material/TextField";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Alert from "@mui/material/Alert";
-import AlertTitle from "@mui/material/AlertTitle";
+import { useLocation } from "react-router-dom";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import validateToken from "../helpers/validateToken";
+import { useEffect, useState } from "react";
+import Alert from "@mui/material/Alert";
+import AlertTitle from "@mui/material/AlertTitle";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import axiosInstance from "../api/axiosInstance";
+import Box from "@mui/material/Box";
+import { set, useForm } from "react-hook-form";
 
-export const Login = () => {
-    const { setUser } = useUser();
+const ResetPassword = () => {
+    const location = useLocation();
+    const searchParams = new URLSearchParams(location.search);
+    const token = searchParams.get("token");
+
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        async function checkTOKEN() {
-            try {
-                let result = await validateToken();
-                if (result.success) {
-                    setUser(result.user);
-                    navigate("/client");
-                }
-            } catch (error) {
-                console.log("hhhh");
-            }
-        }
-
-        checkTOKEN();
-    }, []);
 
     const schema = yup.object().shape({
-        email: yup.string().email().required(),
-        password: yup.string().required().min(8).max(16),
+        password: yup.string().required(),
+        confirmPassword: yup
+            .string()
+            .oneOf([yup.ref("password"), null], "Passwords must match"),
     });
 
     const {
@@ -47,12 +32,15 @@ export const Login = () => {
     } = useForm({ resolver: yupResolver(schema) });
 
     const onSubmit = async (data) => {
-        await axios
-            .post("http://localhost:3000/api/auth/login", data)
+        setError(null);
+        setSuccess(null);
+        console.log(data);
+        await axiosInstance
+            .post(`api/auth/resetpassword/${token}`, data)
             .then((response) => {
                 try {
-                    setUser(response.data.user);
-                    navigate("/client");
+                    console.log(response.data);
+                    setSuccess(response.data.success);
                 } catch (error) {
                     console.log(error);
                 }
@@ -65,7 +53,7 @@ export const Login = () => {
 
     return (
         <div>
-            <h1> this is the Login</h1>
+            <h1>Forgot Password</h1>
             <Box
                 component="form"
                 sx={{
@@ -96,26 +84,27 @@ export const Login = () => {
                     )}
                     <div>
                         <TextField
-                            error={!!errors.email}
-                            label="email"
-                            {...register("email")}
-                        />
-                        {errors.email && (
-                            <p style={{ margin: 0, color: "red" }}>
-                                {errors.email.message}
-                            </p>
-                        )}
-                    </div>
-                    <div>
-                        <TextField
-                            type="password"
                             error={!!errors.password}
                             label="password"
+                            type="password"
                             {...register("password")}
                         />
                         {errors.password && (
                             <p style={{ margin: 0, color: "red" }}>
                                 {errors.password.message}
+                            </p>
+                        )}
+                    </div>
+                    <div>
+                        <TextField
+                            error={!!errors.confirmPassword}
+                            label="confirmPassword"
+                            type="password"
+                            {...register("confirmPassword")}
+                        />
+                        {errors.confirmPassword && (
+                            <p style={{ margin: 0, color: "red" }}>
+                                {errors.confirmPassword.message}
                             </p>
                         )}
                     </div>
@@ -127,3 +116,5 @@ export const Login = () => {
         </div>
     );
 };
+
+export default ResetPassword;

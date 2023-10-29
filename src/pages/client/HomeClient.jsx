@@ -1,27 +1,14 @@
 import { useUser } from "../../contexts/UserContext";
-import axiosInstance from "../../api/axiosInstance";
 
-import Logout from "../Logout";
+import LogoutButton from "../../components/shared/LogoutButton.jsx";
 function HomeClient() {
-  const { user } = useUser();
-  const check = async () => {
-    await axiosInstance
-      .get("/api/auth/checkauth")
-      .then((response) => {
-        console.log(response.data);
-      })
-      .catch((error) => {
-        console.log(error.response.data.error);
-      });
-  };
-  return (
-    <div>
-      <h1>Welcome to the Client Role!</h1>
-      <p>your name is: {user?.name} </p>
-      <button onClick={check}>check</button>
-      <Logout />
-    </div>
-  );
+    const { user } = useUser();
+    return (
+        <div>
+            <h1>Welcome to the Client Role!</h1>
+            <p>your name is: {user?.name} </p>
+        </div>
+    );
 }
 
 export default HomeClient;
