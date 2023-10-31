@@ -25,7 +25,20 @@ export const Login = () => {
                 let result = await validateToken();
                 if (result.success) {
                     setUser(result.user);
-                    navigate("/client");
+                    switch (result.user.role) {
+                        case "client":
+                            navigate("/client");
+                            break;
+                        case "delivery_men":
+                            navigate("/delivery_men");
+                            break;
+                        case "manager":
+                            navigate("/manager");
+                            break;
+                        default:
+                            navigate("/");
+                            break;
+                    }
                 }
             } catch (error) {
                 console.log("hhhh");
@@ -52,7 +65,21 @@ export const Login = () => {
             .then((response) => {
                 try {
                     setUser(response.data.user);
-                    navigate("/client");
+                    console.log(response.data.user);
+                    switch (response.data.user.role) {
+                        case "client":
+                            navigate("/client");
+                            break;
+                        case "delivery_men":
+                            navigate("/delivery_men");
+                            break;
+                        case "manager":
+                            navigate("/manager");
+                            break;
+                        default:
+                            navigate("/");
+                            break;
+                    }
                 } catch (error) {
                     console.log(error);
                 }
@@ -64,12 +91,22 @@ export const Login = () => {
     };
 
     return (
-        <div>
-            <h1> this is the Login</h1>
+        <div
+            style={{
+                width: "100%",
+                height: "80vh",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+            }}
+        >
             <Box
                 component="form"
                 sx={{
                     "& .MuiTextField-root": { m: 1, width: "25ch" },
+                    border: "1px solid grey",
+                    padding: "20px",
+                    borderRadius: "10px",
                 }}
                 noValidate
                 autoComplete="off"
@@ -119,9 +156,16 @@ export const Login = () => {
                             </p>
                         )}
                     </div>
+
+                    <div>
+                        <p>
+                            Don't have an account?{" "}
+                            <a href="/register">Sign up</a>
+                        </p>
+                    </div>
                 </div>
                 <Button variant="contained" type="submit">
-                    Submit
+                    Login
                 </Button>
             </Box>
         </div>

@@ -8,13 +8,16 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Login } from "./pages/Login"; // Use { Login } instead of Login
 import { Register } from "./pages/Register"; // Use { Register } instead of Register
 import { Activate } from "./pages/activate.jsx";
-import HomeClient from "./pages/client/HomeClient";
 import UnAuthorized from "./pages/UnAuthorized";
 import { UserProvider } from "./contexts/UserContext";
 import AuthorizedRoute from "./services/AuthorizedRoute";
 import RootLayout from "./layouts/RootLayout";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import Home from "./pages/Home";
+import HomeClient from "./pages/client/HomeClient";
+import HomeDelivery from "./pages/delivery/HomeDelivery";
+import HomeManager from "./pages/manager/HomeManager";
 
 function App() {
     return (
@@ -22,6 +25,7 @@ function App() {
             <Router>
                 <Routes>
                     <Route path="/" element={<RootLayout />}>
+                        <Route path="/" element={<Home />} />
                         <Route path="/login" element={<Login />} />
                         <Route path="/register" element={<Register />} />
                         <Route path="/activate" element={<Activate />} />
@@ -34,6 +38,10 @@ function App() {
                             element={<ResetPassword />}
                         />
                         <Route
+                            path="/unauthorized"
+                            element={<UnAuthorized />}
+                        />
+                        <Route
                             path="/client"
                             element={
                                 <AuthorizedRoute
@@ -43,8 +51,22 @@ function App() {
                             }
                         />
                         <Route
-                            path="/unauthorized"
-                            element={<UnAuthorized />}
+                            path="/delivery_men"
+                            element={
+                                <AuthorizedRoute
+                                    requiredRole="delivery_men"
+                                    element={<HomeDelivery />}
+                                />
+                            }
+                        />
+                        <Route
+                            path="/manager"
+                            element={
+                                <AuthorizedRoute
+                                    requiredRole="manager"
+                                    element={<HomeManager />}
+                                />
+                            }
                         />
                     </Route>
                 </Routes>

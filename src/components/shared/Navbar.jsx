@@ -15,7 +15,7 @@ import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import { useState } from "react";
 
-const pages = ["Products", "Pricing", "Blog"];
+const pages = ["Products", "Pricing", "About", "Contact"];
 // const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 const Navbar = () => {
@@ -39,7 +39,7 @@ const Navbar = () => {
     const { user } = useUser();
     return (
         <div>
-            <AppBar position="static" style={{ background: "#ffbb21" }}>
+            <AppBar position="static" style={{ background: "#ffd752" }}>
                 <Container maxWidth="xl">
                     <Toolbar disableGutters>
                         <AdbIcon
@@ -49,14 +49,14 @@ const Navbar = () => {
                             variant="h6"
                             noWrap
                             component="a"
-                            href="#app-bar-with-responsive-menu"
+                            href="/"
                             sx={{
                                 mr: 2,
                                 display: { xs: "none", md: "flex" },
                                 fontFamily: "monospace",
                                 fontWeight: 700,
                                 letterSpacing: ".3rem",
-                                color: "inherit",
+                                color: "#00435b",
                                 textDecoration: "none",
                             }}
                         >
@@ -101,7 +101,10 @@ const Navbar = () => {
                                         key={page}
                                         onClick={handleCloseNavMenu}
                                     >
-                                        <Typography textAlign="center">
+                                        <Typography
+                                            style={{ color: "#00435b" }}
+                                            textAlign="center"
+                                        >
                                             {page}
                                         </Typography>
                                     </MenuItem>
@@ -123,7 +126,7 @@ const Navbar = () => {
                                 fontFamily: "monospace",
                                 fontWeight: 700,
                                 letterSpacing: ".3rem",
-                                color: "inherit",
+                                color: "#00435b",
                                 textDecoration: "none",
                             }}
                         >
@@ -141,7 +144,7 @@ const Navbar = () => {
                                     onClick={handleCloseNavMenu}
                                     sx={{
                                         my: 2,
-                                        color: "white",
+                                        color: "#00435b",
                                         display: "block",
                                     }}
                                 >
